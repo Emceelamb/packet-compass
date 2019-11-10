@@ -12,7 +12,7 @@ const int rightPin   = 3;
 int       rightState = 0;
 
 // initialize the stepper library on pins 8 through 11:
-Stepper stepper(stepsPerRevolution, 8, 9, 10, 11);
+Stepper stepper(stepsPerRevolution, 3, 5, 6, 7);
 
 void setup() {
   
@@ -29,10 +29,11 @@ void loop() {
   leftState = digitalRead(leftPin);
   rightState = digitalRead(rightPin);
   
-  if (rightState == HIGH) {
     stepper.step(rightStep);
+//  if (rightState == HIGH) {
+//    stepper.step(rightStep);
     Serial.println("right high");
-  }
+//  }
 
   if (leftState == HIGH) {
     stepper.step(leftStep);

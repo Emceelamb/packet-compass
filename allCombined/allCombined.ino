@@ -35,9 +35,24 @@ float p = 3.1415926;
 #include <Stepper.h>
 const int stepsPerRevolution = 512;
 const int leftStep  = -2;
-const int rightStep = 2;
+const int rightStep = 20;
 // initialize the stepper library on pins 8 through 11:
 Stepper stepper(stepsPerRevolution, 3, 5, 6, 7);
+
+//button 
+const int buttonPin = 2; 
+int buttonState = 0;         // variable for reading the pushbutton status
+int buttonPrev = 0;
+int counter = 0;
+String hop[4][4] =  {
+  {"128.122.1.4","500 miles", "40.7128N", "74.0060W"},
+  {"192.168.184.228","200 miles","74.006W", "73.9973W"},
+  {"104.20.72.239","You've arrived.","37.4633N", "122.2343W"}
+};
+
+//String dis[2] = {"500 miles", "200 miles"};
+//String lat[2] = {"40.7128N", "40.7308N"};
+//String lon[2] = {"74.0060W", "73.9973W"};
 
 
 void setup(void) {
@@ -46,40 +61,19 @@ void setup(void) {
   tft.initR(INITR_144GREENTAB); // Init ST7735R chip, green tab
 
   stepper.setSpeed(60);
+
+  pinMode(buttonPin, INPUT);
 }
 
 void loop() {
-    stepper.step(rightStep);
-  
     int x, y, z, a, b;
     char myArray[3];
     
     compass.read();
     
-//    x = compass.getX();
-//    y = compass.getY();
-//    z = compass.getZ();
-    
     a = compass.getAzimuth();
-    
-    b = compass.getBearing(a);
-  
+    b = compass.getBearing(a); 
     compass.getDirection(myArray, a);
-      
-    Serial.print("X: ");
-    Serial.print(x);
-  
-    Serial.print(" Y: ");
-    Serial.print(y);
-  
-    Serial.print(" Z: ");
-    Serial.print(z);
-  
-    Serial.print(" Azimuth: ");
-    Serial.print(a);
-  
-    Serial.print(" Bearing: ");
-    Serial.print(b);
   
     Serial.print(" Direction: ");
 //    Serial.print(myArray[0]);
@@ -90,22 +84,48 @@ void loop() {
   
     delay(250);
 
+    String dir = String(myArray[1])+String(myArray[2]);
+//    String dis = "500 miles";
+//    String lat = "40.7128N";
+//    String lon = "74.0060W";
+
     tft.setTextWrap(false);
     tft.fillScreen(ST77XX_BLACK);
     tft.setCursor(10, 30);
-    tft.println("1. 128.122.1.4");
-    String dir = String(myArray[1])+String(myArray[2]);
-    String dis = "500 miles";
-    String lat = "40.7128N";
-    String lon = "74.0060W";
+//    tft.println("1. 128.122.1.4");
+
+    buttonState = digitalRead(buttonPin);
+//    if(buttonState != button 
+    if(buttonState != buttonPrev){
+      if(buttonState==HIGH){
+        Serial.println("HIGHkjkj");
+        counter++;
+      }
+      buttonPrev = buttonState;
+      if (counter>3){
+        counter = 0;
+      }
+    }
+
+    
+    tft.println(hop[counter][0]);
     tft.setCursor(10, 50);
     tft.println(dir);
     tft.setCursor(10, 62);
-    tft.println(dis);
+    tft.println(hop[counter][1]);
+   
     tft.setCursor(10, 74);
-    tft.println(lat + + ", " + lon);
+    tft.println(hop[counter][2] + + ", " + hop[counter][3]);
     tft.setTextColor(ST77XX_WHITE);
     tft.setTextSize(1);
+
+    if (dir != " N"){
+      stepper.step(rightStep);
+      Serial.println("Moving");
+      Serial.print(String(hop[0][3]));
+    } else {
+//      Serial.println("At North");
+    }
 }
 
 void tftPrintTest() {
