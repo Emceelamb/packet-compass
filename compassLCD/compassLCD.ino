@@ -82,7 +82,7 @@ void loop() {
     Serial.print(b);
   
     Serial.print(" Direction: ");
-//    Serial.print(myArray[0]);
+    Serial.print(myArray[0]);
     Serial.print(myArray[1]);
     Serial.print(myArray[2]);
   
