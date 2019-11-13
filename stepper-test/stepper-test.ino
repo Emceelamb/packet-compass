@@ -28,21 +28,22 @@ void setup() {
 
 void loop() {
 
+    stepper.step(30);
 //  stepper.step(step_degree(40));
-    buttonState = digitalRead(buttonPin);
-//    if(buttonState != button 
-    if(buttonState != buttonPrev){
-      if(buttonState==HIGH){
-        Serial.println("pressed");
-       
-  stepper.step(step_degree(375));
- 
-      }
-           buttonPrev = buttonState;
-    }
+//    buttonState = digitalRead(buttonPin);
+////    if(buttonState != button 
+//    if(buttonState != buttonPrev){
+//      if(buttonState==HIGH){
+//        Serial.println("pressed");
+//       
+//  stepper.step(step_degree(20));
+// 
+//      }
+//           buttonPrev = buttonState;
+//    }
 }
 
-const float resolution  = 5.625; // put your step resolution here
+const float resolution  = 11.25; // put your step resolution here
 int step_degree(float desired_degree){
     Serial.println("moved 40");
     return (desired_degree/resolution);}
