@@ -1,5 +1,6 @@
 // adapted from https://github.com/mimiyin/collective-play-s18/blob/master/00_helloworld/02_helloworld-sockets/server.js
 
+const ipKey = require('./SECRETS')
 // Create server
 let port = process.env.PORT || 8000;
 let express = require('express');
@@ -48,6 +49,8 @@ io.sockets.on('connection',
 	// Callback function on connection
   // Comes back with a socket object
 	function (socket) {
+    
+    socket.emit("key", ipKey);
 
 		console.log("We have a new client: " + socket.id);
     let hops = [];

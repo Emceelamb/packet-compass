@@ -3,7 +3,7 @@ let socket = io();
 // ipStack API for city,
 let ipURL = "http://api.ipstack.com/";
 let ips = [];
-let ipKey = "?access_key=1585e1ed2134c1238365356bd337912d";
+let ipKey;
 let fields = "&fields=ip,city,region_code,country_code,latitude,longitude"
 // IPs' lat, long, city from ipStack API
 let ipsData = {};
@@ -29,12 +29,16 @@ function setup(){
   // Listen for confirmation of connection
   socket.on('connect', function() {
     console.log("Connected");
+    socket.on("key", function(data){
+      ipKey = data;
+    })
+    
   });
 
   // Receive message from server
   socket.on('traceroute', function(data){
     // console.log(data);
-    // console.log(Object.keys(data).length);
+    /// console.log(Object.keys(data).length);
     // for (let i = 0; i< Object.keys(data).length; i++){
     //   // console.log(data[i].ip);
     //   if (data[i].ip != "*"){
@@ -58,7 +62,7 @@ function setup(){
     fmtRenamethislater = renamethislater
     //Pass all IPs into ipStack's API
     for (let i = 0; i<renamethislater; i++){
-      let ipStack = ipURL + ips[i] + ipKey + fields;
+      let ipStack = ipURL + ips[i] + ipKey.ipKey + fields;
       loadJSON(ipStack, geolocate);
     }
     // let ipStack = ipURL + ips[10] + ipKey;
