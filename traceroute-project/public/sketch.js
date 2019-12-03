@@ -17,6 +17,7 @@ let bearings = [];
 let renamethislater = 0
 let fmtRenamethislater = renamethislater
 
+let hops =[];
 function myFunc(){
   let site = document.getElementById("site").value;
   console.log("Button is pressed!", site);
@@ -59,7 +60,7 @@ function setup(){
       }
     }
     renamethislater = ips.length
-    fmtRenamethislater = renamethislater
+    fmtRenamethislater = renamethislater 
     //Pass all IPs into ipStack's API
     for (let i = 0; i<renamethislater; i++){
       let ipStack = ipURL + ips[i] + ipKey.ipKey + fields;
@@ -68,6 +69,7 @@ function setup(){
     // let ipStack = ipURL + ips[10] + ipKey;
     // loadJSON(ipStack, gotIPdata);
   });
+
 }
 
 //Get the lat, long, city data with ipStack's API
@@ -78,10 +80,13 @@ function geolocate(data){
   // if (data.longitude != null){
   //   longs.push(data.longitude);
   // }
-  console.log("data", data);
+
+  hops.push(data)
 
   if (data.longitude == null || data.latitude == null) {
       fmtRenamethislater -= 1
+    lats.push(0);
+    longs.push(0);
   }
 
   if (data.longitude != null && data.latitude != null){
@@ -94,6 +99,7 @@ function geolocate(data){
       distance();
     }
   }
+
 
 }
 
@@ -110,19 +116,22 @@ function distance(){
       // console.log("to", to.geometry.coordinates);
       let distance = turf.distance(from, to, options);
       distances.push(distance);
+    let bearing = turf.bearing(from,to);
+    bearings.push(bearing);
+
     }
   }
   console.log("distances", distances);
 }
 
 function bearing(){
-  // for (let i=0; i<lats.length; i++){
-  //   from = turf.point([lats[i], longs[i]]);
-  //   to = turf.point([lats[i+1], longs[i+1]]);
-  //   let bearing = turf.bearing(point1, point2);
-  //   bearings.push(bearing);
-  // }
-  //   console.log("bearings", bearings);
+  for (let i=0; i<lats.length; i++){
+    from = turf.point([lats[i], longs[i]]);
+    to = turf.point([lats[i+1], longs[i+1]]);
+    let bearing = turf.bearing(point1,point2);
+    bearings.push(bearing);
+  }
+    console.log("bearings", bearings);
 }
 
 
