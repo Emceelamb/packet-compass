@@ -17,6 +17,8 @@ let bearings = [];
 let renamethislater = 0
 let fmtRenamethislater = renamethislater
 
+let hops_=[]
+let hops=[]
 function myFunc(){
   let site = document.getElementById("site").value;
   console.log("Button is pressed!", site);
@@ -32,23 +34,10 @@ function setup(){
     socket.on("key", function(data){
       ipKey = data;
     })
-    
   });
 
   // Receive message from server
   socket.on('traceroute', function(data){
-    // console.log(data);
-    /// console.log(Object.keys(data).length);
-    // for (let i = 0; i< Object.keys(data).length; i++){
-    //   // console.log(data[i].ip);
-    //   if (data[i].ip != "*"){
-    //     ips.push(data[i].ip);
-    //   }
-    // }
-    // // console.log(ips);
-    // let ipStack = ipURL + ips.join() + ipKey;
-    // loadJSON(ipStack, gotIPdata);
-
   });
 
 //Create array after 'finishTracing' when the traceroute has been completed -> .on ('close') in server side, instead of when it was running, otherwise will get more items than needed in array
@@ -65,68 +54,76 @@ function setup(){
       let ipStack = ipURL + ips[i] + ipKey.ipKey + fields;
       loadJSON(ipStack, geolocate);
     }
-    // let ipStack = ipURL + ips[10] + ipKey;
-    // loadJSON(ipStack, gotIPdata);
+    // delay so temp hops are populated
+    setTimeout(populateHops, 1000)
   });
 }
 
-//Get the lat, long, city data with ipStack's API
+// temporarily store hops 
 function geolocate(data){
-  // if (data.latitude != null){
-  //   lats.push(data.latitude);
-  // }
-  // if (data.longitude != null){
-  //   longs.push(data.longitude);
-  // }
-  console.log("data", data);
-
-  if (data.longitude == null || data.latitude == null) {
-      fmtRenamethislater -= 1
-  }
-
-  if (data.longitude != null && data.latitude != null){
-    // console.log(data)
-    lats.push(data.latitude);
-    longs.push(data.longitude);
-    // distance();
-
-    if (lats.length == fmtRenamethislater) {
-      distance();
-    }
-  }
-
+ hops_.push(data) 
 }
 
-function distance(){
+//Get the lat, long, city data with ipStack's API
+function distance(e,f){
   let from;
   let to;
   let options = {units: 'miles'};
 
-  for (let i=0; i<lats.length; i++){
-    if (lats[i+1]) {
-      from = turf.point([lats[i], longs[i]]);
-      to = turf.point([lats[i+1], longs[i+1]]);
-      // console.log("from", from.geometry.coordinates);
-      // console.log("to", to.geometry.coordinates);
-      let distance = turf.distance(from, to, options);
-      distances.push(distance);
-    }
+      // only do distance if not null
+      if(e.latitude!=null){
+        from = turf.point([e.latitude, e.longitude]);
+        to = turf.point([f.latitude, f.longitude]);
+        let distance = turf.distance(from, to, options);
+        return distance;
+      }
+}
+
+// only get bearing if not null
+function bearing(e,f){
+      if(e.latitude!=null){
+        from = turf.point([e.latitude, e.longitude]);
+        to = turf.point([f.latitude, f.longitude]);
+        let bearing = turf.bearing(from, to );
+        return bearing;
+      }
+}
+
+
+// Call distance bearing functions
+
+function getDB(i,j){
+  let hop;
+  let server = {
+    ip: i.ip,
+    city: i.city,
+    latitude: i.latitude,
+    longitude: i.longitude
   }
-  console.log("distances", distances);
+  let nextServer = {
+    ip: j.ip,
+    city: j.city,
+    latitude: j.latitude,
+    longitude: j.longitude
+  }
+  if(server.latitude!=null&&nextServer.latitude!=null){
+    hop=server;
+    hop["distance"]=distance(i,j);
+    hop["bearing"]=bearing(i,j)
+  } else {
+    hop = server
+    hop["distance"]=0
+    hop["bearing"]=null
+    //console.log(hop)
+  }
+  hops.push(hop)
 }
 
-function bearing(){
-  // for (let i=0; i<lats.length; i++){
-  //   from = turf.point([lats[i], longs[i]]);
-  //   to = turf.point([lats[i+1], longs[i+1]]);
-  //   let bearing = turf.bearing(point1, point2);
-  //   bearings.push(bearing);
-  // }
-  //   console.log("bearings", bearings);
-}
+// call get db on hop list
 
-
-// Callback to draw position when new position is received
-// function gotHops(data){
-//   console.log(data);
-// }
+async function populateHops(){
+    for(let i = 0;i< hops_.length-1;i++){
+      getDB(hops_[i],hops_[i+1])
+    }
+    console.log("Finished traceroute.")
+  }
