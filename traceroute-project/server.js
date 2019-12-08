@@ -9,6 +9,8 @@ let server = require('http').createServer(app).listen(port, function () {
   console.log('Server listening at port: ', port);
 });
 
+const fs = require('fs');
+
 // Tell server where to look for files
 app.use(express.static('public'));
 
@@ -99,6 +101,23 @@ io.sockets.on('connection',
     // Listen for this client to disconnect
 		socket.on('disconnect', function() {
 			console.log("Client has disconnected " + socket.id);
-		});
+    });
+    
+    socket.on('hops', function(msg){
+      let newHops = msg;
+      //console.log(newHops)
+      fs.readFile('public/hops.json', function(err, data){
+
+
+        let json ={}
+        
+        json["hops"]=newHops;
+        fs.writeFile("public/hops.json", JSON.stringify(json), (err)=>{
+          if (err) throw err;
+          console.log("saved")
+        })
+
+      })
+    })
 	}
 );

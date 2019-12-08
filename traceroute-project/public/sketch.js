@@ -126,4 +126,6 @@ async function populateHops(){
       getDB(hops_[i],hops_[i+1])
     }
     console.log("Finished traceroute.")
+    socket.emit('hops', hops )
+    hops=[]
   }
