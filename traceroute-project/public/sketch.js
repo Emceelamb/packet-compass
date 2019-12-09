@@ -92,6 +92,18 @@ function bearing(e,f){
 
 // Call distance bearing functions
 
+function getASN(i){
+    let asnlookup = "https://api.hackertarget.com/aslookup/?q="
+    // let asnlookup = "https://api.iptoasn.com/v1/as/ip/"
+    let asn = loadStrings(asnlookup+i)
+    // let xhr = new XMLHttpRequest();
+    let asn_ = asnlookup+i;
+    // xhr.open('GET', asn);
+    // xhr.send()
+
+    return asn
+}
+
 function getDB(i,j){
   let hop;
   let server = {
@@ -109,11 +121,14 @@ function getDB(i,j){
   if(server.latitude!=null&&nextServer.latitude!=null){
     hop=server;
     hop["distance"]=distance(i,j);
-    hop["bearing"]=bearing(i,j)
+    hop["bearing"]=bearing(i,j);
+    // hop["asn"]=getASN(i.ip)
+
   } else {
     hop = server
     hop["distance"]=0
     hop["bearing"]=null
+    //hop["asn"]=getASN(i.ip)
     //console.log(hop)
   }
   hops.push(hop)

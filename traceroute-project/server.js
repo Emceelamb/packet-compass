@@ -4,43 +4,24 @@ const ipKey = require('./SECRETS')
 // Create server
 let port = process.env.PORT || 8000;
 let express = require('express');
+let path = require('path');
 let app = express();
 let server = require('http').createServer(app).listen(port, function () {
   console.log('Server listening at port: ', port);
 });
+const cors = require('cors');
 
 const fs = require('fs');
+const request = require('request');
 
 // Tell server where to look for files
-app.use(express.static('public'));
 
+//app.use()
+app.use(express.static('public'))
+app.use(cors());
 // traceroute
+
 const Traceroute = require('nodejs-traceroute');
-//
-// try {
-//     const tracer = new Traceroute();
-//     let hops = [];
-//     tracer
-//         // .on('pid', (pid) => {
-//         //     // console.log(`pid: ${pid}`);
-//         // })
-//         // .on('destination', (destination) => {
-//         //     console.log(`destination: ${destination}`);
-//         // })
-//         .on('hop', (hop) => {
-//           hops.push(hop)
-//
-//             // console.log(`hop: ${JSON.stringify(hop)}`);
-//         })
-//         .on('close', (code) => {
-//             console.log(`close: code ${code}`);
-//             console.log(hops);
-//         });
-//
-//     tracer.trace('example.com');
-// } catch (ex) {
-//     console.log(ex);
-// }
 
 
 // Create socket connection
@@ -105,7 +86,14 @@ io.sockets.on('connection',
     
     socket.on('hops', function(msg){
       let newHops = msg;
-      //console.log(newHops)
+      for(var i =0; i <newHops.length; i++){
+        console.log(newHops[i].ip)
+        getASN(newHops[i].ip)
+        newHops[i].asn = getASN(newHops[i].ip)
+        console.log(newHops[i].asn)
+      }
+
+      // console.log(newHops)
       fs.readFile('public/hops.json', function(err, data){
 
 
@@ -118,6 +106,38 @@ io.sockets.on('connection',
         })
 
       })
+      
+
+      
     })
 	}
 );
+
+app.get('/i.html', cors(), function (req, res) {
+  res.sendFile(path.join(__dirname, '../traceroute-project/public', 'index.html'))
+  // res.send('hi')
+  console.log("bla bla blah")
+  //res.json({msg: 'This is CORS-enabled for a Single Route'})
+})
+
+app.get('/2.html', (req,res)=>{
+  res.send("hi")
+})
+
+function getASN(i){
+    let asnlookup = "https://api.hackertarget.com/aslookup/?q="
+    // let asnlookup = "https://api.iptoasn.com/v1/as/ip/"
+    let asn;
+    console.log(asnlookup + i)
+    request(asnlookup + i, (err, res, body)=>{
+      if(!err && res.statusCode == 200){
+        // console.log(asnlookup+i)
+        asn=body;
+        console.log(body)
+      } else {
+        console.log("err "+ express.statusCode)
+      }
+    })
+
+    return asn
+}

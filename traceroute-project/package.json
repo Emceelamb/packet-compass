@@ -10,9 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "nedb": "^1.8.0",
     "nodejs-traceroute": "^1.1.1",
+    "request": "^2.88.0",
     "socket.io": "^2.3.0",
     "traceroute": "^1.0.0"
   }
