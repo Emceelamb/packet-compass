@@ -86,11 +86,11 @@ io.sockets.on('connection',
     
     socket.on('hops', function(msg){
       let newHops = msg;
+      let hopps =[]
       for(var i =0; i <newHops.length; i++){
-        console.log(newHops[i].ip)
-        getASN(newHops[i].ip)
-        newHops[i].asn = getASN(newHops[i].ip)
-        console.log(newHops[i].asn)
+        let hopObj = newHops[i]
+        hopObj = getASN(newHops[i].ip)
+        hopps.push(hopObj);
       }
 
       // console.log(newHops)
@@ -99,7 +99,7 @@ io.sockets.on('connection',
 
         let json ={}
         
-        json["hops"]=newHops;
+        json["hops"]=hopps;
         fs.writeFile("public/hops.json", JSON.stringify(json), (err)=>{
           if (err) throw err;
           console.log("saved")
@@ -136,6 +136,7 @@ function getASN(i){
         console.log(body)
       } else {
         console.log("err "+ express.statusCode)
+        asn="something went wrong but it someone does own this."
       }
     })
 
