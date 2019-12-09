@@ -89,18 +89,22 @@ io.sockets.on('connection',
       let hopps =[]
       for(var i =0; i <newHops.length; i++){
         let hopObj = newHops[i]
-        hopObj = getASN(newHops[i].ip)
+        // hopObj["asn"] = "blah"
+        hopObj["asn"] = getASN(newHops[i].ip)
+        console.log(getASN(newHops[i].ip))
         hopps.push(hopObj);
       }
 
-      // console.log(newHops)
       fs.readFile('public/hops.json', function(err, data){
 
 
         let json ={}
         
+        
         json["hops"]=hopps;
+        // console.log(json, "why am i not saving")
         fs.writeFile("public/hops.json", JSON.stringify(json), (err)=>{
+          // console.log(json, "after wrting file")
           if (err) throw err;
           console.log("saved")
         })
@@ -126,6 +130,7 @@ app.get('/2.html', (req,res)=>{
 
 function getASN(i){
     let asnlookup = "https://api.hackertarget.com/aslookup/?q="
+    // let asnlookup = "http://google.com"
     // let asnlookup = "https://api.iptoasn.com/v1/as/ip/"
     let asn;
     console.log(asnlookup + i)
@@ -133,12 +138,14 @@ function getASN(i){
       if(!err && res.statusCode == 200){
         // console.log(asnlookup+i)
         asn=body;
-        console.log(body)
+        asn="tata"
+        // console.log(body)
       } else {
         console.log("err "+ express.statusCode)
         asn="something went wrong but it someone does own this."
       }
     })
 
+    console.log(asn, "!")
     return asn
 }

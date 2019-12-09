@@ -122,12 +122,14 @@ function getDB(i,j){
     hop=server;
     hop["distance"]=distance(i,j);
     hop["bearing"]=bearing(i,j);
+    hop["asn"]=""
     // hop["asn"]=getASN(i.ip)
 
   } else {
     hop = server
     hop["distance"]=0
     hop["bearing"]=null
+    hop["asn"]=""
     //hop["asn"]=getASN(i.ip)
     //console.log(hop)
   }
