@@ -91,7 +91,7 @@ io.sockets.on('connection',
         let hopObj = newHops[i]
         // hopObj["asn"] = "blah"
         hopObj["asn"] = getASN(newHops[i].ip)
-        console.log(getASN(newHops[i].ip))
+        console.log(newHops[i].ip)
         hopps.push(hopObj);
       }
 
@@ -132,20 +132,23 @@ function getASN(i){
     let asnlookup = "https://api.hackertarget.com/aslookup/?q="
     // let asnlookup = "http://google.com"
     // let asnlookup = "https://api.iptoasn.com/v1/as/ip/"
-    let asn;
-    console.log(asnlookup + i)
+    console.log(asnlookup + i, "inside asn")
     request(asnlookup + i, (err, res, body)=>{
       if(!err && res.statusCode == 200){
         // console.log(asnlookup+i)
-        asn=body;
+        let asn=body;
+
         asn="tata"
-        // console.log(body)
+        console.log(body, "tata")
+        return asn
       } else {
         console.log("err "+ express.statusCode)
-        asn="something went wrong but it someone does own this."
+        console.log("Jflk")
+        let asn="something went wrong but it someone does own this."
+        return asn
       }
+    console.log(asn, "after getasn")
+    return asn
     })
 
-    console.log(asn, "!")
-    return asn
 }
