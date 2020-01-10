@@ -10,6 +10,7 @@ let server = require('http').createServer(app).listen(port, function () {
 });
 
 const fs = require('fs');
+const https=require('https');
 
 // Tell server where to look for files
 app.use(express.static('public'));
@@ -106,6 +107,24 @@ io.sockets.on('connection',
     socket.on('hops', function(msg){
       let newHops = msg;
       //console.log(newHops)
+      let asns = [];
+      newHops.forEach((hop)=>{
+        let ipaddr=hop.ip;
+
+        https.get(`https://api.iptoasn.com/v1/as/ip/${ipaddr}`, (res)=>{
+          let data='';
+          res.on('data', (chunk)=>{
+            data+=chunk;
+          });
+          res.on('end', ()=> {
+            console.log(JSON.parse(data), "ASN")
+            asns.push(JSON.parse(data));
+          });
+        }).on("error", (err) => {
+          console.log("ERROR: "+ err.message);
+        });
+      })
+      console.log(asns,"!");
       fs.readFile('public/hops.json', function(err, data){
 
 
