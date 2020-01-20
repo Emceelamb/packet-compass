@@ -1,17 +1,19 @@
-const https = require('https');
-
-let ipaddr="192.205.32.170";
-
-https.get(`https://api.iptoasn.com/v1/as/ip/${ipaddr}`, (res)=>{
-  let data = '';
-  res.on('data', (chunk)=>{
-    data += chunk;
-  });
-
-  res.on('end', () => {
-    console.log(JSON.parse(data));
-  });
-  
-}).on("error", (err) =>{
-  console.log("Error: " + err.message);
+var IPToASN = require('ip-to-asn');
+ 
+var client = new IPToASN();
+ 
+var addresses = [
+  '68.22.187.5',
+  '207.229.165.18',
+  '216.58.216.224',
+  '198.6.1.65'
+];
+ 
+client.query(addresses, function (err, results) {
+  if (err) {
+    console.error(err);
+    return;
+  }
+ 
+  console.log(results);
 });
