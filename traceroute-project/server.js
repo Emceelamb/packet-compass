@@ -75,7 +75,8 @@ io.sockets.on(
       var asns = [];
       let addresses = [];
       let finishedLookup = [];
-      console.log(asns);
+      console.log(finishedLookup.length, 'after')
+      // console.log(asns);
       newHops.forEach(address => {
         addresses.push(address.ip);
         console.log(address.ip);
@@ -101,9 +102,9 @@ io.sockets.on(
           // newHops[j].push(res)
           curhop['asn'] = res;
           finishedLookup.push(curhop);
-          if (i == newHops.length) {
-            console.log(finishedLookup);
-            writeHops(finishedLookup)
+          // if (i == newHops.length) {
+          //   // console.log(finishedLookup);
+          //   writeHops(finishedLookup)
           }
         });
       }
@@ -133,6 +134,7 @@ function writeHops(finishedLookup) {
   fs.readFile('public/hops.json', function(err, data) {
     let json = {};
 
+    delete json.hops;
     json['hops'] = finishedLookup;
     fs.writeFile('public/hops.json', JSON.stringify(json), err => {
       if (err) throw err;
