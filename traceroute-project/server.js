@@ -102,9 +102,9 @@ io.sockets.on(
           // newHops[j].push(res)
           curhop['asn'] = res;
           finishedLookup.push(curhop);
-          // if (i == newHops.length) {
-          //   // console.log(finishedLookup);
-          //   writeHops(finishedLookup)
+          if (i == newHops.length) {
+            // console.log(finishedLookup);
+            writeHops(finishedLookup)
           }
         });
       }
